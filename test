@@ -148,6 +148,11 @@ namespace QuanLiSanPham
             adapter.Fill(dt);
 
         }
+private void đổiMàuToolStripMenuItem_Click(object sender, EventArgs e)
+{
+    Control c = ((sender as ToolStripItem).Owner as ContextMenuStrip).SourceControl;
+    c.BackColor = Color.Yellow;
+}
     }
     }
 
