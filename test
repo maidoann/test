@@ -1,0 +1,153 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace QuanLiSanPham
+{
+    public partial class Form1 : Form
+    {
+        SqlConnection conn;
+        SqlDataAdapter adapter;
+        DataTable dt;
+        SqlCommand cmd;
+        public Form1()
+        {
+            InitializeComponent();
+            string sql = "Data source = MAIDOAN\\SQLEXPRESS; Initial catalog = QUANLYSANPHAM; Integrated security = true";
+            conn = new SqlConnection(sql);
+            conn.Open();
+            dt = new DataTable();
+            adapter = new SqlDataAdapter("select * from SanPham", conn);
+            adapter.Fill(dt);
+            dataGridView1.DataSource = dt;
+            cmd = new SqlCommand();
+            cmd.Connection = conn;
+
+
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox2_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            dataGridView1.Rows.Clear();
+        }
+
+        private void btnThem_Click(object sender, EventArgs e)
+        {
+            string masp = tbMaSp.Text;
+            string tensp = tbTensp.Text;
+            DateTime ngaysx = dtpNgaySx.Value; // Lấy giá trị ngày tháng từ DateTimePicker
+            DateTime ngayhh = dtpNgayHh.Value;
+            string donvi = tbDonvi.Text;
+            decimal dongia = Convert.ToDecimal(tbDongia.Text);
+            string ghichu = tbGhichu.Text;
+            // Câu lệnh SQL với tham số
+            // Đặt câu lệnh SQL cho SqlCommand
+            cmd.CommandText = "INSERT INTO SanPham (MaSP, TenSP, NgaySX, NgayHH, DonVi, DonGia, GhiChu) " +
+                              "VALUES (@MaSP, @TenSP, @NgaySX, @NgayHH, @DonVi, @DonGia, @GhiChu)";
+
+            // Thêm tham số vào câu lệnh SQL
+            cmd.Parameters.Clear(); // Xóa các tham số cũ (nếu có)
+            cmd.Parameters.AddWithValue("@MaSP", masp);
+            cmd.Parameters.AddWithValue("@TenSP", tensp);
+            cmd.Parameters.AddWithValue("@NgaySX", ngaysx);
+            cmd.Parameters.AddWithValue("@NgayHH", ngayhh);
+            cmd.Parameters.AddWithValue("@DonVi", donvi);
+            cmd.Parameters.AddWithValue("@DonGia", dongia);
+            cmd.Parameters.AddWithValue("@GhiChu", ghichu);
+
+            // Thực thi câu lệnh SQL
+
+            cmd.ExecuteNonQuery();
+                dt.Clear();
+                adapter.Fill(dt);
+            }
+
+        private void btnXoa_Click(object sender, EventArgs e)
+        {
+            string masp = tbMaSp.Text;
+            cmd.CommandText = "delete from SanPham where maSp = @maSp";
+            cmd.Parameters.Clear();
+            cmd.Parameters.AddWithValue("maSp",masp);
+            cmd.ExecuteNonQuery();
+            dt.Clear();
+            adapter.Fill(dt);
+        }
+
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            int rowindex = e.RowIndex;
+            tbMaSp.Text = dataGridView1.Rows[rowindex].Cells["maSp"].Value.ToString();
+            tbTensp.Text = dataGridView1.Rows[rowindex].Cells["tenSp"].Value.ToString();
+            tbDonvi.Text = dataGridView1.Rows[rowindex].Cells["donVi"].Value.ToString();
+            tbGhichu.Text = dataGridView1.Rows[rowindex].Cells["ghiChu"].Value.ToString();
+            tbDongia.Text = dataGridView1.Rows[rowindex].Cells["donGia"].Value.ToString();
+
+            dtpNgaySx.Text = dataGridView1.Rows[rowindex].Cells["ngaySx"].Value.ToString();
+            dtpNgayHh.Text = dataGridView1.Rows[rowindex].Cells["ngayHh"].Value.ToString();
+
+
+        }
+
+        private void btnSua_Click(object sender, EventArgs e)
+        {
+            string masp = tbMaSp.Text;
+            string tensp = tbTensp.Text;
+            DateTime ngaysx = dtpNgaySx.Value; // Lấy giá trị ngày tháng từ DateTimePicker
+            DateTime ngayhh = dtpNgayHh.Value;
+            string donvi = tbDonvi.Text;
+            decimal dongia = Convert.ToDecimal(tbDongia.Text);
+            string ghichu = tbGhichu.Text;
+
+            cmd.CommandText = "update SanPham set tenSp = @tenSp, ngaySx = @ngaySx, ngayHh = @ngayHh, donVi = @donVi, donGia = @donGia, ghiChu = @ghiChu where maSp = @maSp";
+            cmd.Parameters.Clear();
+            cmd.Parameters.AddWithValue("@maSp",masp);
+            cmd.Parameters.AddWithValue("@tenSp", tensp);
+            cmd.Parameters.AddWithValue("@ngaySx", ngaysx);
+            cmd.Parameters.AddWithValue("@ngayHh", ngayhh);
+            cmd.Parameters.AddWithValue("@donVi", donvi);
+            cmd.Parameters.AddWithValue("@donGia", dongia);
+            cmd.Parameters.AddWithValue("@ghiChu", ghichu   );
+
+            cmd.ExecuteNonQuery();
+            dt.Clear();
+            adapter.Fill(dt);
+        }
+
+        private void btnTim_Click(object sender, EventArgs e)
+        {
+            string masp = textBox1.Text;
+            string tensp = textBox2.Text;
+            cmd.CommandText = "select * from SanPham where maSp = @maSp or tenSp = @tenSp";
+            cmd.Parameters.Clear();
+            cmd.Parameters.AddWithValue("@maSp",masp );
+            cmd.Parameters.AddWithValue("@tenSp", tensp);
+            adapter = new SqlDataAdapter(cmd);
+            dt.Clear();
+            adapter.Fill(dt);
+
+        }
+    }
+    }
+
